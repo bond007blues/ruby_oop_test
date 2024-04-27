@@ -1,6 +1,8 @@
+require_relative "ownable"
 require_relative "item_manager"
 
 class Cart
+  include Ownable
   include ItemManager
 
   def initialize(owner)
@@ -32,8 +34,23 @@ class Cart
   # ## ヒント
   #   - カートのオーナーのウォレット ==> self.owner.wallet
   #   - アイテムのオーナーのウォレット ==> item.owner.wallet
-  #   - お金が移されるということ ==> (？)のウォレットからその分を引き出して、(？)のウォレットにその分を入金するということ
   #   - アイテムのオーナー権限がカートのオーナーに移されること ==> オーナーの書き換え(item.owner = ?)
+  # カート内のアイテムを一つずつ処理
+  @items.each do |item|
+    # アイテムのオーナーのウォレットに合計金額を移動
+    item_owner_wallet = item.owner.wallet
+    owner_wallet = self.owner.wallet
+
+    # カートのオーナーのウォレットからアイテムのオーナーのウォレットに金額を移動
+    withdrawn_amount = owner_wallet.withdraw(item.price)
+    item_owner_wallet.deposit(withdrawn_amount)
+
+    # アイテムのオーナー権限をカートのオーナーに移す
+    item.owner = self.owner
+  end
+
+  # カートの中身を空にする
+  @items.clear
   end
 
 end

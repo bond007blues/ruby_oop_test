@@ -1,5 +1,10 @@
+require_relative "ownable"
+
 class Wallet
+  include Ownable
+  #balanceは残高の意意
   attr_reader :balance
+
 
   def initialize(owner)
     self.owner = owner

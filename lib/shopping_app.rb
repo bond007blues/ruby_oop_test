@@ -2,6 +2,7 @@ require_relative "shopping_app/seller"
 require_relative "shopping_app/item"
 require_relative "shopping_app/customer"
 
+#販売者インスタンスを生成しつつ、自信をオーナーとしたwalletインスタンスも生成される
 seller = Seller.new("DICストア")
 10.times{ Item.new(1, "CPU", 40830, seller) }
 10.times{ Item.new(2, "メモリー", 13880, seller) }
@@ -14,9 +15,12 @@ seller = Seller.new("DICストア")
 10.times{ Item.new(9, "CPUクーラー", 13400, seller) }
 10.times{ Item.new(10, "グラフィックボード", 23800, seller) }
 
+#Customerインスタンスをローカル変数に代入
 puts "🤖 あなたの名前を教えてください"
 customer = Customer.new(gets.chomp)
 
+#Customoer<User同時に生成されるclass Walletインスタンスのdepositメソッドに値を渡す
+#すなわち@balanceにgets.chomp.to_iが入力される
 puts "🏧 ウォレットにチャージする金額を入力にしてください"
 customer.wallet.deposit(gets.chomp.to_i)
 
@@ -32,11 +36,13 @@ while !end_shopping do
   puts "⛏ 商品数量を入力してください"
   quantity = gets.to_i
 
+  # numberと対応した自身の所有するItemインスタンスを指定されたquantitiy分返します。
   items = seller.pick_items(number, quantity)
 
   items&.each{|item| customer.cart.add(item) }
 
   puts "🛒 カートの中身"
+  # 自身の所有するItemインスタンスの在庫状況を、["番号", "商品名", "金額", "数量"]という列でテーブル形式にして出力します。
   customer.cart.items_list
   puts "🤑 合計金額: #{customer.cart.total_amount}"
 
@@ -44,6 +50,7 @@ while !end_shopping do
   end_shopping = gets.chomp == "yes"
 end
 
+#ここが課題で問われている部分。よってここが正しく処理されないといけない。
 puts "💸 購入を確定しますか？(yes/no)"
 customer.cart.check_out if gets.chomp == "yes"
 

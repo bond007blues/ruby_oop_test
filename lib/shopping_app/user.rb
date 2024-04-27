@@ -1,7 +1,9 @@
+require_relative "ownable"
 require_relative "item_manager"
 require_relative "wallet"
 
 class User
+  include Ownable
   include ItemManager
 
   attr_accessor :name
